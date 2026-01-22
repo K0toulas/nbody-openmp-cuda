@@ -16,3 +16,27 @@ Best result on **csl-venus server** (2× Intel Xeon E5-2695 v3, 128 GiB RAM, 2×
 - **Final (Multi-GPU + SoA):** **0.1016 s**, **56.25× speedup** compared to OpenMP version, **423.3374 GInter/s**
 
 See `docs/report.pdf` for methodology, plots and the full optimization breakdown.
+
+## Build
+Requirements:
+- CUDA toolkit (`nvcc`)
+- A host C/C++ compiler supported by your CUDA toolkit (OpenMP enabled via `-Xcompiler -fopenmp`)
+
+Build:
+```bash
+make -C src
+```
+## Run 
+```bash
+./src/nbody
+```
+## Clean 
+```bash
+make -C src clean
+```
+
+``markdown  
+## Test environment (for reported results)  
+- CPU: 2× Intel Xeon E5-2695 v3 @ 2.30GHz  
+- RAM: 128 GiB  
+- GPU: 2× NVIDIA Tesla K80 (GK210GL)
