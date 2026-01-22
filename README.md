@@ -1,25 +1,18 @@
-# N-body Simulation (OpenMP + CUDA) — GPU Performance Engineering
+## Project summary
+Performance-engineered an O(N²) N-body gravitational simulation on CPU and GPU. Starting from a sequential reference implementation, I introduced coarse-grained CPU parallelism with **OpenMP** across independent systems (galaxies), then offloaded the computational hotspot to **CUDA** and iteratively optimized the GPU implementation through memory-layout redesign, shared-memory tiling, and asynchronous execution. The work emphasizes profiling-driven optimization, memory efficiency, and end-to-end throughput.
 
-Parallelization and optimization of an N-body gravitational simulation (O(N²) interactions) on CPU (OpenMP) and GPU (CUDA), with a focus on memory efficiency and overlapping transfers/compute.
+## Highlights
+- **CPU parallelization (OpenMP):** parallelized at the *system (galaxy)* level to exploit independence with minimal synchronization.
+- **CUDA offload:** mapped one galaxy per CUDA block and used a strided body assignment to cover all bodies; enforced per-timestep correctness with `__syncthreads()`.
+- **Memory layout optimizations:** evolved from **AoS** to split **SoA** (coords/velocities) and ultimately full **SoA** (`x[]/y[]/z[]/vx[]/vy[]/vz[]`) to improve coalescing and reduce wasted bandwidth.
+- **Shared-memory tiling:** staged coordinate tiles in shared memory to reduce redundant global loads in the inner interaction loop (best tile size found experimentally).
+- **Instruction-level optimizations:** applied manual unrolling and fast-math primitives (`rsqrtf`, `fmaf`) where the error tolerance permitted.
+- **Concurrency & overlap:** used multiple **CUDA streams**, **pinned host memory**, and `cudaMemcpyAsync` to overlap H2D/D2H transfers with kernel execution.
+- **Multi-GPU scaling:** partitioned systems across **two GPUs** with per-device streams and synchronization, improving throughput substantially.
 
-## Key results (relative to CPU OpenMP baseline)
-- **CPU OpenMP baseline:** 5.7137s (7.52 GInter/s)
-- **Best single-node result (2× Tesla K80):** **0.1016s, 56.25× speedup**, **423.34 GInter/s**
-- Multi-GPU + streams + SoA achieved the highest throughput in the project.
+## Performance (relative to CPU OpenMP baseline)
+Best result on **csl-venus** (2× Intel Xeon E5-2695 v3, 128 GiB RAM, 2× NVIDIA Tesla K80):
+- **CPU OpenMP:** 5.7137 s (7.5175 GInter/s)
+- **Final (Multi-GPU + SoA):** **0.1016 s**, **56.25× speedup**, **423.3374 GInter/s**
 
-## Optimizations implemented
-- **Data layout redesign:** AoS → split SoA (coords/velocities), later full SoA (x/y/z/vx/vy/vz arrays)
-- **Shared memory tiling:** reduced global memory traffic (best TILE_SIZE = 512 in experiments)
-- **Loop unrolling:** `#pragma unroll 8` to increase ILP in the inner interaction loop
-- **CUDA streams:** concurrent execution across independent systems (galaxies)
-- **Overlap transfers/compute:** pinned host memory + `cudaMemcpyAsync` to hide H2D/D2H behind kernels
-- **Fast math & caching:** `__ldg`, `__restrict__`, `rsqrtf`, `fmaf`, robust tiling bounds
-- **Multiple GPUs:** partitioned systems across GPUs with per-device streams and synchronization
-
-## Correctness
-Validated GPU output against CPU OpenMP with absolute error < **1e-3** on selected body positions (per report).
-
-## Build
-Requires CUDA toolkit (`nvcc`):
-```bash
-make -C src
+See `docs/report.pdf` for methodology, plots, and the full optimization breakdown.
