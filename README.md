@@ -1,42 +1,27 @@
-## Project summary
-Performance-engineered an O(N²) N-body gravitational simulation on CPU and GPU. Starting from a sequential reference implementation, I introduced coarse-grained CPU parallelism with **OpenMP** across independent systems (galaxies), then offloaded the computational hotspot to **CUDA** and iteratively optimized the GPU implementation through memory-layout redesign, shared-memory tiling and asynchronous execution. The work emphasizes profiling-driven optimization, memory efficiency and end-to-end throughput.
+**A performance-engineered O(N²) N-body gravitational simulation optimized for CPU and multi-GPU architectures.**
 
-## Highlights
-- **CPU parallelization (OpenMP):** parallelized at the *system (galaxy)* level to exploit independence with minimal synchronization.
-- **CUDA offload:** mapped one galaxy per CUDA block and used a strided body assignment to cover all bodies, enforced per-timestep correctness with `__syncthreads()`.
-- **Memory layout optimizations:** evolved from **AoS** to split **SoA** (coords/velocities) and ultimately full **SoA** (`x[]/y[]/z[]/vx[]/vy[]/vz[]`) to improve coalescing and reduce wasted bandwidth.
-- **Shared-memory tiling:** staged coordinate tiles in shared memory to reduce redundant global loads in the inner interaction loop (best tile size found experimentally).
-- **Instruction-level optimizations:** applied manual unrolling and fast-math primitives (`rsqrtf`, `fmaf`) where the error tolerance permitted.
-- **Concurrency & overlap:** used multiple **CUDA streams**, **pinned host memory** and `cudaMemcpyAsync` to overlap H2D/D2H transfers with kernel execution.
-- **Multi-GPU scaling:** partitioned systems across **two GPUs** with per-device streams and synchronization, improving throughput substantially.
+This project started as a sequential reference implementation and was iteratively optimized using OpenMP for the CPU and CUDA for the GPU. The focus is on profiling driven optimization, memory efficiency and maximizing end-to-end throughput.
 
-## Performance (relative to CPU OpenMP baseline)
-Best result on **csl-venus server** (2× Intel Xeon E5-2695 v3, 128 GiB RAM, 2× NVIDIA Tesla K80):
-- **CPU OpenMP:** 5.7137 s (7.5175 GInter/s)
-- **Final (Multi-GPU + SoA):** **0.1016 s**, **56.25× speedup** compared to OpenMP version, **423.3374 GInter/s**
+> **Status:** Completed. Achieved a **56.25× speedup** over the OpenMP baseline using multi-GPU execution and memory layout optimizations.
 
-See `docs/report.pdf` for methodology, plots and the full optimization breakdown.
+---
 
-## Build
-Requirements:
-- CUDA toolkit (`nvcc`)
-- A host C/C++ compiler supported by your CUDA toolkit (OpenMP enabled via `-Xcompiler -fopenmp`)
+##  What It Does
 
-Build:
-```bash
-make -C src
-```
-## Run 
-```bash
-./src/nbody
-```
-## Clean 
-```bash
-make -C src clean
-```
+This simulation calculates the gravitational forces and updates the positions/velocities of bodies across multiple independent systems (galaxies). By isolating systems, the workload avoids heavy synchronization, allowing for massive parallelization across CPU threads and GPU blocks.
 
-``markdown  
-## Test environment (for reported results)  
-- CPU: 2× Intel Xeon E5-2695 v3 @ 2.30GHz  
-- RAM: 128 GiB  
-- GPU: 2× NVIDIA Tesla K80 (GK210GL)
+See `docs/report.pdf` for the complete methodology, optimization breakdown and performance plots.
+
+---
+
+##  Project Structure
+
+```text
+nbody-openmp-cuda/
+├── src/
+│   ├── Makefile            # Build configuration
+│   ├── nbody.cu            # Main CUDA implementation
+│   └── ...                 # Additional source files
+├── docs/
+│   └── report.pdf          # Detailed methodology and profiling plots
+└── README.md
