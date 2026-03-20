@@ -40,11 +40,13 @@ See `docs/report.pdf` for the complete methodology, optimization breakdown and p
 nbody-openmp-cuda/
 ├── src/
 │   ├── Makefile            # Build configuration
-│   ├── nbody.cu            # Main CUDA implementation
-│   └── ...                 # Additional source files
+│   └── nbody.cu            # Main CUDA implementation
 ├── docs/
-│   ├── assets/             # Images and GIFs for README
+|   ├── spec.pdf            # Project requirmnets
 │   └── report.pdf          # Detailed methodology and profiling plots
+├── visualization/          # Assets and animation scripts
+|   ├── animate.py          # Animation script
+│   └── docs/assets/        # Simulation GIFs
 └── README.md
 ```
 
