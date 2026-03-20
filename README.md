@@ -3,7 +3,7 @@
 **N-body gravitational simulation optimized for multi-GPU architectures.**
 
 <p align="center">
-  <img src="docs/assets/simulation_demo.gif" alt="N-Body Simulation Animation" width="100%"/>
+  <img src="visualization/docs/assets/simulation_demo.gif" alt="N-Body Simulation Animation" width="100%"/>
 </p>
 
 Developed as part of the ECE415: High Performance Computing Systems course, this project started as a sequential reference implementation and was iteratively optimized using OpenMP for the CPU and CUDA for the GPU. The focus is on profiling driven optimization, memory efficiency and maximizing end toend throughput.
