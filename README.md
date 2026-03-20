@@ -6,7 +6,7 @@
   <img src="visualization/docs/assets/simulation_demo.gif" alt="N-Body Simulation Animation" width="100%"/>
 </p>
 
-Developed as part of the ECE415: High Performance Computing Systems course, this project started as a sequential reference implementation and was iteratively optimized using OpenMP for the CPU and CUDA for the GPU. The focus is on profiling driven optimization, memory efficiency and maximizing end toend throughput.
+Developed as part of the ECE415: High Performance Computing Systems course, this project started as a sequential reference implementation and was iteratively optimized using OpenMP for the CPU and CUDA for the GPU. The focus is on profiling driven optimization, memory efficiency and maximizing end to end throughput.
 
 > **Status:** Completed. Achieved a **56.25× speedup** over the OpenMP baseline using multi-GPU execution and memory layout optimizations.
 
@@ -61,7 +61,7 @@ The simulation started with a CPU OpenMP Baseline (achieving 7.51 GInter/s) and 
 6. **Asynchronous Overlap:** Utilized pinned host memory (`cudaHostAlloc`) and `cudaMemcpyAsync` to enqueue data early achieving a 3-way overlap that completely hides Host-to-Device and Device-to-Host transfer latencies behind kernel execution.
 7. **Advanced Stream Scheduling:** Shifted the host-side enqueueing logic into three distinct phases (All H2D → All Compute → All D2H) to ensure transfer overhead is entirely hidden even for the earliest galaxies.
 8. **Multi-GPU Scaling:** Partitioned the workload across 2×GPUs(Tesla K80), managing per-device state, buffers and streams to double the compute bandwidth.
-9. **Full SoA Redesign:** Refactored the data layout into a complete Structure of Arrays (`x[]/y[]/z[]/vx[]/vy[]/vz[]`). The data is perfectly aligned with contiguous warp memory accesses. Also, partitioned the workload across 4xGPUs(Tesla K80).
+9. **Full SoA Redesign:** Refactored the data layout into a Structure of Arrays (`x[]/y[]/z[]/vx[]/vy[]/vz[]`). The data is perfectly aligned with contiguous warp memory accesses. Partitioned the workload across 4× GPUs(Tesla K80).
 
 
 **Final Throughput: 423.33 GInter/s - Top of the class**
