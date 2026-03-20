@@ -16,6 +16,20 @@ Developed as part of the ECE415: High Performance Computing Systems course, this
 
 This simulation calculates the gravitational forces and updates the positions/velocities of bodies across multiple independent systems (galaxies). By isolating systems the workload avoids heavy synchronization allowing for massive parallelization across CPU threads and GPU blocks.
 
+###  Gravitational Dynamics
+<p align="center">
+  <img src="visualization/docs/assets/simulation_bodies.gif" width="100%"/>
+  <br>
+  <i>Visualizes the stable orbits and "slingshot" effects of the central black hole.</i>
+</p>
+
+###  Velocity Heatmap (Kinetic Energy)
+<p align="center">
+  <img src="visualization/docs/assets/simulation_speed_heatmap.gif" width="100%"/>
+  <br>
+  <i>Colors bodies based on velocity (Plasma CMAP) to highlight acceleration and high energy interactions in the core.</i>
+</p>
+
 See `docs/report.pdf` for the complete methodology, optimization breakdown and performance plots.
 
 ---
