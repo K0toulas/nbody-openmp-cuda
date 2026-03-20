@@ -22,7 +22,7 @@ VIEW_RADIUS = 250
 FIG_WIDTH = 9.5          # 9.5 inches * 100 DPI = 950 pixels wide
 FIG_HEIGHT = 5.0         # 5.0 inches * 100 DPI = 500 pixels tall
 DPI = 100                # Resolution multiplier
-CPU_MAX_BODIES = 4000    # Increased from 1500. Less downsampling = denser galaxy!
+CPU_MAX_BODIES = 4000    # Max bodies to render on CPU for smooth animation 
 
 # --- Ring Size Configuration ---
 RING_INNER_DIST = 43.0   
@@ -76,7 +76,7 @@ def generate_binary_file(filename):
             for b in system_data:
                 data = struct.pack('ffffff', b['x'], b['y'], b['z'], b['vx'], b['vy'], b['vz'])
                 f.write(data)
-    print("✅ Generation complete.")
+    print(" Generation complete.")
 
 # ==========================================
 # 2. PHYSICS & ANIMATION
@@ -194,7 +194,7 @@ def main():
     print(f"Generating 950x500 Widescreen GIF...")
     
     anim.save(GIF_FILE, writer='pillow', fps=24)
-    print(f"✅ GIF successfully saved to {GIF_FILE}")
+    print(f"GIF successfully saved to {GIF_FILE}")
 
     plt.show()
 
